@@ -1,0 +1,23 @@
+; Crypto Cage Combat — native Godot client + headless authority server.
+; Engine port of base44/shared/fightSim.js (© Ian W Thompson, MIT).
+
+config_version=5
+
+[application]
+
+config/name="Crypto Cage Combat (Native)"
+config/description="Deterministic headless authority server + desktop client for Crypto Cage Combat."
+config/features=PackedStringArray("4.7")
+run/main_scene="res://Main.tscn"
+
+[display]
+
+window/size/viewport_width=960
+window/size/viewport_height=540
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+
+[debug]
+
+gdscript/warnings/unsafe_property_access=0
+gdscript/warnings/unsafe_method_access=0

@@ -1,0 +1,9 @@
+# Godot import/cache
+.godot/
+
+# Export output
+build/
+
+# OS cruft
+Thumbs.db
+.DS_Store
