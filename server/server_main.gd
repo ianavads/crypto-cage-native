@@ -58,7 +58,14 @@ var _countdown := {} # match_id -> remaining ticks while READY
 
 
 func _ready() -> void:
-	_load_config()
+	# All tunables come from the Config autoload (exported defaults + env/CLI).
+	engine_version = Config.engine_version
+	port = Config.port
+	settle_url = Config.settle_url
+	settle_token = Config.settle_token
+	countdown_ticks = Config.countdown_ticks
+	match_ticks = Config.match_ticks
+	ws_enabled = Config.ws_enabled
 	if engine_version == "":
 		push_warning("CAGE_ENGINE_VERSION not set and FightSim.ENGINE_VERSION empty — refusing all seats until pinned.")
 	_host = ENetConnection.new()
@@ -76,42 +83,6 @@ func _ready() -> void:
 	Engine.physics_ticks_per_second = FS.TICK_HZ
 	print("[cage] authority server | ENet UDP %d%s | engine_version=%s | settle_url=%s" % [
 		port, (" + WebSocket TCP %d" % port) if _tcp != null else "", engine_version, settle_url])
-
-
-func _load_config() -> void:
-	engine_version = _env("CAGE_ENGINE_VERSION", FS.get_engine_version())
-	settle_url = _env("CAGE_SETTLE_URL", settle_url)
-	settle_token = _env("SERVER_SETTLE_TOKEN", "")
-	var p := _env("CAGE_PORT", "")
-	if p != "" and p.is_valid_int():
-		port = int(p)
-	var cd := _env("CAGE_COUNTDOWN_TICKS", "")
-	if cd != "" and cd.is_valid_int():
-		countdown_ticks = int(cd)
-	var mt := _env("CAGE_MATCH_TICKS", "")
-	if mt != "" and mt.is_valid_int():
-		match_ticks = int(mt)
-	if _env("CAGE_WS", "1") == "0":
-		ws_enabled = false
-	for arg in OS.get_cmdline_user_args():
-		if arg.begins_with("--cage-port="):
-			port = int(arg.split("=")[1])
-		elif arg.begins_with("--engine-version="):
-			engine_version = arg.split("=", true, 1)[1]
-		elif arg.begins_with("--settle-url="):
-			settle_url = arg.split("=", true, 1)[1]
-		elif arg.begins_with("--countdown-ticks="):
-			countdown_ticks = int(arg.split("=")[1])
-		elif arg == "--no-ws":
-			ws_enabled = false
-
-
-static func _env(key: String, fallback: String) -> String:
-	if OS.has_environment(key):
-		var v := OS.get_environment(key)
-		if v != "":
-			return v
-	return fallback
 
 
 func _physics_process(_delta: float) -> void:

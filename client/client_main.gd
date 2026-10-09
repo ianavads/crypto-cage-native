@@ -27,8 +27,11 @@ var _font: Font
 
 func _ready() -> void:
 	_font = ThemeDB.fallback_font
-	_verify_url = _cfg("CAGE_VERIFY_URL", "--verify-url=", DEFAULT_VERIFY_URL)
-	_web_url = _cfg("CAGE_WEB_URL", "--web-url=", DEFAULT_WEB_URL)
+	_verify_url = Config.verify_url
+	_web_url = Config.web_url
+	_wire_window()
+	# An exported client self-registers cryptocage:// on launch (no-op in editor).
+	Config.ensure_protocol_registered()
 
 	_nc = NetClientScript.new()
 	add_child(_nc)
@@ -56,6 +59,28 @@ func _ready() -> void:
 		_nc.start_from_token(token, _verify_url)
 	else:
 		_status = "No cryptocage:// launch URL. Open a match from the web app."
+
+
+func _wire_window() -> void:
+	var win := get_window()
+	if win == null:
+		return
+	win.title = "Crypto Cage Combat"
+	win.min_size = Vector2i(640, 360)
+	# Clean up the net connection on window close before quitting.
+	if not win.close_requested.is_connected(_on_close_requested):
+		win.close_requested.connect(_on_close_requested)
+
+
+func _on_close_requested() -> void:
+	if _nc != null:
+		_nc.close()
+	get_tree().quit()
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		_on_close_requested()
 
 
 func _process(delta: float) -> void:

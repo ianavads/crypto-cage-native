@@ -10,10 +10,16 @@ config/description="Deterministic headless authority server + desktop client for
 config/features=PackedStringArray("4.7")
 run/main_scene="res://Main.tscn"
 
+[autoload]
+
+Config="*res://config.gd"
+
 [display]
 
 window/size/viewport_width=960
 window/size/viewport_height=540
+window/size/window_width_override=960
+window/size/window_height_override=540
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 
